@@ -14,12 +14,14 @@ export function SimpleChat({ noteContent, noteTitle, noteSubject }: SimpleChatPr
   const [response, setResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [askedQuestion, setAskedQuestion] = useState<string | null>(null);
 
   const sendQuestion = async () => {
     if (!question.trim()) return;
     
     setLoading(true);
     setError(null);
+    const currentQuestion = question;
     
     try {
       const res = await axios.post('/api/chat', {
@@ -32,6 +34,7 @@ export function SimpleChat({ noteContent, noteTitle, noteSubject }: SimpleChatPr
       });
       
       setResponse(res.data.response);
+      setAskedQuestion(currentQuestion);
       setQuestion('');
     } catch (err) {
       console.error('Error communicating with Gemini API:', err);
@@ -45,15 +48,27 @@ export function SimpleChat({ noteContent, noteTitle, noteSubject }: SimpleChatPr
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold text-primary-700 mb-4">Ask about this note</h2>
       
+      <div className="mb-4 text-sm text-gray-600">
+        <p>Ask questions about your "{noteTitle}" note on {noteSubject}.</p>
+        <p className="text-xs text-gray-500 mt-1">The AI has full context of your note content.</p>
+      </div>
+      
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
         </div>
       )}
       
-      {response && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-          <p className="whitespace-pre-wrap">{response}</p>
+      {askedQuestion && response && (
+        <div className="mb-6">
+          <div className="p-3 bg-gray-100 rounded-t-md">
+            <p className="text-sm font-medium text-gray-700">Your question:</p>
+            <p>{askedQuestion}</p>
+          </div>
+          <div className="p-4 bg-primary-50 border-l-4 border-primary-500 rounded-b-md">
+            <p className="text-sm font-medium text-primary-700">Answer:</p>
+            <p className="whitespace-pre-wrap">{response}</p>
+          </div>
         </div>
       )}
       
