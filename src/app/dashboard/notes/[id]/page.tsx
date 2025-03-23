@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server';
 import { Note } from '@/types/database';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { SimpleChat } from '@/components/SimpleChat';
 
 interface NotePageProps {
   params: {
@@ -67,8 +68,8 @@ export default async function NotePage({ params }: NotePageProps) {
         </div>
       </div>
       
-      {/* Placeholder for future chat feature */}
-      <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+      {/* Remove or comment out this placeholder */}
+      {/* <div className="mt-8 bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-bold text-primary-700 mb-4">Discussion (Coming Soon)</h2>
         <div className="bg-gray-50 rounded-lg p-6 text-center">
           <p className="text-gray-500">
@@ -76,6 +77,14 @@ export default async function NotePage({ params }: NotePageProps) {
             You'll be able to discuss this note with classmates and tutors.
           </p>
         </div>
+      </div> */}
+      
+      <div className="mt-8">
+        <SimpleChat 
+          noteContent={note.content} 
+          noteTitle={note.title}
+          noteSubject={note.subject}
+        />
       </div>
     </div>
   );
