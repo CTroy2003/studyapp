@@ -37,7 +37,7 @@ export function SimpleChat({ noteContent, noteTitle, noteSubject }: SimpleChatPr
       setAskedQuestion(currentQuestion);
       setQuestion('');
     } catch (err) {
-      console.error('Error communicating with Gemini API:', err);
+      console.error('Error communicating with custom chatbot API:', err);
       setError('Failed to get a response. Please try again.');
     } finally {
       setLoading(false);
@@ -49,8 +49,7 @@ export function SimpleChat({ noteContent, noteTitle, noteSubject }: SimpleChatPr
       <h2 className="text-xl font-bold text-primary-700 mb-4">Ask about this note</h2>
       
       <div className="mb-4 text-sm text-gray-600">
-        <p>Ask questions about your "{noteTitle}" note on {noteSubject}.</p>
-        <p className="text-xs text-gray-500 mt-1">The AI has full context of your note content.</p>
+        <p>Ask questions about your &quot;{noteTitle}&quot; note on {noteSubject}.</p>
       </div>
       
       {error && (
