@@ -10,13 +10,16 @@ export const createClient = () => {
     {
       cookies: {
         get(name) {
-          return cookieStore.get(name)?.value || '';
+          const cookie = cookieStore.get(name);
+          return cookie?.value || '';
         },
         set(name, value, options) {
-          // Cookie setting handled by middleware
+          // In Next.js, you can't set cookies in a Server Component directly
+          // This is handled by Supabase Auth Helpers middleware
         },
         remove(name, options) {
-          // Cookie removal handled by middleware
+          // In Next.js, you can't remove cookies in a Server Component directly
+          // This is handled by Supabase Auth Helpers middleware
         },
       },
     }

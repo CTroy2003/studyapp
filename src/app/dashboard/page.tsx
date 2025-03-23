@@ -1,32 +1,69 @@
-import { createClient } from '@/lib/supabase-server';
-import { Note } from '@/types/database';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+'use client';
 
-export default async function DashboardPage() {
-  const supabase = createClient();
-  
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    redirect('/auth/login');
-  }
-  
-  const { data: notes, error } = await supabase
-    .from('notes')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error('Error fetching notes:', error);
-  }
-  
+import { useState, useEffect } from 'react';
+import { Note, Subject } from '@/types/database';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase';
+import { SubjectFilter } from '@/components/SubjectFilter';
+
+export default function DashboardPage() {
+  const router = useRouter();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+
   const subjectColors = {
     math: 'bg-blue-100 text-blue-800',
     science: 'bg-green-100 text-green-800',
     history: 'bg-yellow-100 text-yellow-800',
     english: 'bg-purple-100 text-purple-800',
   };
-  
+
+  useEffect(() => {
+    async function fetchNotes() {
+      setLoading(true);
+      try {
+        const supabase = createClient();
+        
+        // Check if user is authenticated
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          router.push('/auth/login');
+          return;
+        }
+        
+        // Fetch notes
+        let query = supabase
+          .from('notes')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        // Apply filter if a subject is selected
+        if (selectedSubject) {
+          query = query.eq('subject', selectedSubject);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) throw error;
+        setNotes(data || []);
+      } catch (err) {
+        console.error('Error fetching notes:', err);
+        setError('Failed to load notes. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchNotes();
+  }, [selectedSubject, router]);
+
+  const handleSubjectChange = (subject: string | null) => {
+    setSelectedSubject(subject);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -39,7 +76,20 @@ export default async function DashboardPage() {
         </Link>
       </div>
       
-      {notes && notes.length > 0 ? (
+      <SubjectFilter 
+        activeSubject={selectedSubject} 
+        onSubjectChange={handleSubjectChange} 
+      />
+      
+      {loading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">Loading notes...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-100 text-red-700 p-4 rounded-md">
+          {error}
+        </div>
+      ) : notes.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {notes.map((note: Note) => (
             <Link href={`/dashboard/notes/${note.id}`} key={note.id}>
@@ -62,7 +112,11 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">You don't have any notes yet.</p>
+          <p className="text-gray-500 mb-4">
+            {selectedSubject 
+              ? `You don't have any ${selectedSubject} notes yet.` 
+              : "You don't have any notes yet."}
+          </p>
           <Link 
             href="/dashboard/upload" 
             className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700"
