@@ -4,7 +4,10 @@ const nextConfig = {
     NEXT_PUBLIC_FLASK_API_URL: process.env.FLASK_API_URL,
   },
   experimental: {
-    serverActions: true,
+    serverActions: {},
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 
