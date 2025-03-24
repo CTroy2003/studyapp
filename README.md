@@ -14,15 +14,15 @@ Check out the live application: [EZStudy](https://idontwantto.study/auth/login)
 - **User Authentication**: Sign up, login, and account management using Supabase Auth
 - **Note Upload & Transcription**: Upload images of handwritten notes and convert them to text
 - **Note Organization**: Categorize notes by subject (math, science, history, or english)
-- **Note Management**: View, organize, and access your notes from any device
-- **Responsive Design**: Fully responsive UI using TailwindCSS with a green and white theme
+- **Responsive Design**: Responsive UI using TailwindCSS with a green and white theme
+- **Chatbot for your notes**: Talk to our custom trained chatbot about your notes
 
 ## Tech Stack
 
 - **Frontend/Backend**: Next.js with App Router
 - **Styling**: TailwindCSS
 - **Authentication & Database**: Supabase
-- **Image Processing**: Flask API for OCR (Optical Character Recognition)
+- **Image Processing**: AWS Textract (hosted on a flask server) for OCR (Optical Character Recognition)
 
 ![Study App UI](./public/images/studyappUI.png)
 ![Chat Bot UI](./public/images/chatbotUI.png)
